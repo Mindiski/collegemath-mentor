@@ -41,13 +41,15 @@ const subjects = [
 export function Dashboard({ studentData, onStartExercises }: DashboardProps) {
   const getScoreColor = (percentage: number) => {
     if (percentage >= 80) return "text-success";
-    if (percentage >= 60) return "text-warning";
+    if (percentage >= 60) return "text-primary";
+    if (percentage >= 40) return "text-warning";
     return "text-destructive";
   };
 
   const getMotivationMessage = (percentage: number) => {
     if (percentage >= 80) return "Excellent travail ! Continue sur cette lancée.";
     if (percentage >= 60) return "Bon départ ! Tu peux encore progresser.";
+    if (percentage >= 40) return "C'est un bon début ! Quelques révisions t'aideront.";
     return "Pas de panique, l'entraînement va t'aider à progresser !";
   };
 
@@ -90,7 +92,9 @@ export function Dashboard({ studentData, onStartExercises }: DashboardProps) {
                 variant={studentData.percentage >= 60 ? "default" : "secondary"}
                 className="text-sm px-3 py-1"
               >
-                {studentData.percentage >= 80 ? "Excellent" : studentData.percentage >= 60 ? "Bien" : "À améliorer"}
+                {studentData.percentage >= 80 ? "Excellent" : 
+                 studentData.percentage >= 60 ? "Bien" : 
+                 studentData.percentage >= 40 ? "Correct" : "À améliorer"}
               </Badge>
               <p className="text-sm text-muted-foreground mt-1">Niveau</p>
             </div>
