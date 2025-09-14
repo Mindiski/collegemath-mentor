@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Github, Mail } from "lucide-react";
+import { Github, Mail, MessageCircle, Twitter } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -147,6 +147,56 @@ const Auth = () => {
     }
   };
 
+  const handleTwitterSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "twitter",
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de se connecter avec Twitter.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur inattendue s'est produite.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDiscordSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "discord",
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de se connecter avec Discord.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur inattendue s'est produite.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
@@ -253,6 +303,22 @@ const Auth = () => {
               >
                 <Github className="mr-2 h-4 w-4" />
                 Continuer avec GitHub
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleTwitterSignIn}
+              >
+                <Twitter className="mr-2 h-4 w-4" />
+                Continuer avec Twitter
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleDiscordSignIn}
+              >
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Continuer avec Discord
               </Button>
             </div>
           </div>
