@@ -14,6 +14,210 @@ export type Database = {
   }
   public: {
     Tables: {
+      education_levels: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          order_index: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          order_index: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          order_index?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      educational_resources: {
+        Row: {
+          compilation_date: string | null
+          content: string
+          created_at: string | null
+          education_level_id: string | null
+          id: string
+          is_current: boolean | null
+          last_updated: string | null
+          metadata: Json | null
+          source_type: string
+          source_url: string | null
+          title: string
+          topic_id: string | null
+        }
+        Insert: {
+          compilation_date?: string | null
+          content: string
+          created_at?: string | null
+          education_level_id?: string | null
+          id?: string
+          is_current?: boolean | null
+          last_updated?: string | null
+          metadata?: Json | null
+          source_type: string
+          source_url?: string | null
+          title: string
+          topic_id?: string | null
+        }
+        Update: {
+          compilation_date?: string | null
+          content?: string
+          created_at?: string | null
+          education_level_id?: string | null
+          id?: string
+          is_current?: boolean | null
+          last_updated?: string | null
+          metadata?: Json | null
+          source_type?: string
+          source_url?: string | null
+          title?: string
+          topic_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "educational_resources_education_level_id_fkey"
+            columns: ["education_level_id"]
+            isOneToOne: false
+            referencedRelation: "education_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "educational_resources_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "math_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generated_questions: {
+        Row: {
+          correct_answer: string | null
+          created_at: string | null
+          difficulty_level: number
+          education_level_id: string | null
+          explanation: string | null
+          generated_at: string | null
+          generated_by: string | null
+          id: string
+          is_active: boolean | null
+          possible_answers: Json | null
+          question_text: string
+          question_type: string
+          source_resources: string[] | null
+          topic_id: string | null
+          usage_count: number | null
+          user_feedback: Json | null
+        }
+        Insert: {
+          correct_answer?: string | null
+          created_at?: string | null
+          difficulty_level: number
+          education_level_id?: string | null
+          explanation?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          possible_answers?: Json | null
+          question_text: string
+          question_type: string
+          source_resources?: string[] | null
+          topic_id?: string | null
+          usage_count?: number | null
+          user_feedback?: Json | null
+        }
+        Update: {
+          correct_answer?: string | null
+          created_at?: string | null
+          difficulty_level?: number
+          education_level_id?: string | null
+          explanation?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          possible_answers?: Json | null
+          question_text?: string
+          question_type?: string
+          source_resources?: string[] | null
+          topic_id?: string | null
+          usage_count?: number | null
+          user_feedback?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_questions_education_level_id_fkey"
+            columns: ["education_level_id"]
+            isOneToOne: false
+            referencedRelation: "education_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_questions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "math_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      math_topics: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          education_level_id: string | null
+          id: string
+          name: string
+          parent_topic_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          education_level_id?: string | null
+          id?: string
+          name: string
+          parent_topic_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          education_level_id?: string | null
+          id?: string
+          name?: string
+          parent_topic_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "math_topics_education_level_id_fkey"
+            columns: ["education_level_id"]
+            isOneToOne: false
+            referencedRelation: "education_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "math_topics_parent_topic_id_fkey"
+            columns: ["parent_topic_id"]
+            isOneToOne: false
+            referencedRelation: "math_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -38,6 +242,48 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      resource_compilation_logs: {
+        Row: {
+          compilation_date: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          new_resources: number | null
+          processing_time_ms: number | null
+          resources_found: number | null
+          resources_processed: number | null
+          status: string | null
+          updated_resources: number | null
+        }
+        Insert: {
+          compilation_date?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          new_resources?: number | null
+          processing_time_ms?: number | null
+          resources_found?: number | null
+          resources_processed?: number | null
+          status?: string | null
+          updated_resources?: number | null
+        }
+        Update: {
+          compilation_date?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          new_resources?: number | null
+          processing_time_ms?: number | null
+          resources_found?: number | null
+          resources_processed?: number | null
+          status?: string | null
+          updated_resources?: number | null
         }
         Relationships: []
       }

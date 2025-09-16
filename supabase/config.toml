@@ -1,1 +1,7 @@
 project_id = "aafhxtnnttonldxekpkx"
+
+[functions.resource-compiler]
+verify_jwt = false
+
+[functions.question-generator]
+verify_jwt = false
