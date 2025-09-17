@@ -15,17 +15,17 @@ import { LogOut } from "lucide-react";
 type AppState = "welcome" | "level-selection" | "quiz" | "results" | "dashboard" | "exercises";
 
 const Index = () => {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, isGuestMode } = useAuth();
   const navigate = useNavigate();
   const [currentState, setCurrentState] = useState<AppState>("welcome");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
   const [quizResults, setQuizResults] = useState<any>(null);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isGuestMode) {
       navigate("/auth");
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isGuestMode, navigate]);
 
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
@@ -66,7 +66,7 @@ const Index = () => {
     );
   }
 
-  if (!user) {
+  if (!user && !isGuestMode) {
     return null;
   }
 

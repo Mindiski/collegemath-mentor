@@ -13,6 +13,9 @@ import {
   Award,
   ArrowLeft
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useGuestData } from "@/hooks/useGuestData";
+import { GuestPrompt } from "./GuestPrompt";
 
 interface Exercise {
   id: number;
@@ -76,6 +79,10 @@ interface ExerciseModuleProps {
 export function ExerciseModule({ level, onBack }: ExerciseModuleProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("Tous");
   const [exercises] = useState<Exercise[]>(sampleExercises);
+  const [showGuestPrompt, setShowGuestPrompt] = useState(false);
+
+  const { isGuestMode } = useAuth();
+  const { saveGuestData } = useGuestData();
 
   const categories = ["Tous", ...Array.from(new Set(exercises.map(ex => ex.category)))];
   
@@ -101,6 +108,21 @@ export function ExerciseModule({ level, onBack }: ExerciseModuleProps) {
       case "Moyen": return "⭐⭐";
       case "Difficile": return "⭐⭐⭐";
       default: return "⭐";
+    }
+  };
+
+  const handleExerciseStart = (exerciseId: number) => {
+    // Simulate exercise completion for demo
+    if (isGuestMode) {
+      saveGuestData({
+        exercisesCompleted: Math.random() > 0.3 ? 1 : 0,
+      });
+      
+      // Show guest prompt after completing 2-3 exercises
+      const shouldShowPrompt = Math.random() > 0.4;
+      if (shouldShowPrompt) {
+        setShowGuestPrompt(true);
+      }
     }
   };
 
@@ -239,6 +261,7 @@ export function ExerciseModule({ level, onBack }: ExerciseModuleProps) {
               <Button 
                 className="w-full"
                 variant={exercise.completed ? "outline" : "default"}
+                onClick={() => handleExerciseStart(exercise.id)}
               >
                 <Play className="h-4 w-4 mr-2" />
                 {exercise.completed ? "Refaire" : "Commencer"}
@@ -258,6 +281,10 @@ export function ExerciseModule({ level, onBack }: ExerciseModuleProps) {
             </p>
           </CardContent>
         </Card>
+      )}
+
+      {showGuestPrompt && (
+        <GuestPrompt onClose={() => setShowGuestPrompt(false)} />
       )}
     </div>
   );
