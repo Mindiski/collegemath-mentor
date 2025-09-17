@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Github, Mail, MessageCircle, Twitter } from "lucide-react";
+import { Mail, MessageCircle, Twitter } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -122,30 +122,6 @@ const Auth = () => {
     }
   };
 
-  const handleGithubSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "github",
-        options: {
-          redirectTo: `${window.location.origin}/`,
-        },
-      });
-
-      if (error) {
-        toast({
-          title: "Erreur",
-          description: "Impossible de se connecter avec GitHub.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Une erreur inattendue s'est produite.",
-        variant: "destructive",
-      });
-    }
-  };
 
   const handleTwitterSignIn = async () => {
     try {
@@ -295,14 +271,6 @@ const Auth = () => {
               >
                 <Mail className="mr-2 h-4 w-4" />
                 Continuer avec Google
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleGithubSignIn}
-              >
-                <Github className="mr-2 h-4 w-4" />
-                Continuer avec GitHub
               </Button>
               <Button
                 variant="outline"
