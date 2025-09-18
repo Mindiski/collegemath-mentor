@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,12 +17,6 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { enterGuestMode } = useAuth();
-
-  const handleGuestMode = () => {
-    enterGuestMode();
-    navigate("/");
-  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -296,16 +289,6 @@ const Auth = () => {
                 Continuer avec Discord
               </Button>
             </div>
-            
-            <Separator className="my-4" />
-            
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={handleGuestMode}
-            >
-              Continuer en tant qu'invité
-            </Button>
           </div>
         </CardContent>
       </Card>

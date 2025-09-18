@@ -6,10 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  isGuestMode: boolean;
   signOut: () => Promise<void>;
-  enterGuestMode: () => void;
-  exitGuestMode: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,24 +23,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isGuestMode, setIsGuestMode] = useState<boolean>(false);
 
   useEffect(() => {
-    // Check for guest mode on load
-    const guestMode = localStorage.getItem('guestMode') === 'true';
-    setIsGuestMode(guestMode);
-
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        // Exit guest mode when user signs in
-        if (session) {
-          setIsGuestMode(false);
-          localStorage.removeItem('guestMode');
-        }
       }
     );
 
@@ -61,24 +48,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut();
   };
 
-  const enterGuestMode = () => {
-    setIsGuestMode(true);
-    localStorage.setItem('guestMode', 'true');
-  };
-
-  const exitGuestMode = () => {
-    setIsGuestMode(false);
-    localStorage.removeItem('guestMode');
-  };
-
   const value = {
     user,
     session,
     loading,
-    isGuestMode,
     signOut,
-    enterGuestMode,
-    exitGuestMode,
   };
 
   return (

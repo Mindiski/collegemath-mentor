@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +12,6 @@ import {
   Calendar,
   Zap
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useGuestData } from "@/hooks/useGuestData";
-import { GuestPrompt } from "./GuestPrompt";
 
 interface DashboardProps {
   studentData: {
@@ -43,28 +39,11 @@ const subjects = [
 ];
 
 export function Dashboard({ studentData, onStartExercises }: DashboardProps) {
-  const [showGuestPrompt, setShowGuestPrompt] = useState(false);
-  
-  const { isGuestMode } = useAuth();
-  const { guestData, saveGuestData } = useGuestData();
-  
   const getScoreColor = (percentage: number) => {
     if (percentage >= 80) return "text-success";
     if (percentage >= 60) return "text-primary";
     if (percentage >= 40) return "text-warning";
     return "text-destructive";
-  };
-
-  const handleAction = (action: string) => {
-    if (action === "exercises") {
-      onStartExercises();
-    } else if (action === "lessons") {
-      if (isGuestMode) {
-        saveGuestData({
-          lessonsViewed: guestData.lessonsViewed + 1,
-        });
-      }
-    }
   };
 
   const getMotivationMessage = (percentage: number) => {
@@ -199,7 +178,7 @@ export function Dashboard({ studentData, onStartExercises }: DashboardProps) {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button 
-              onClick={() => handleAction("exercises")}
+              onClick={onStartExercises}
               className="flex items-center gap-2 h-auto p-4"
             >
               <Target className="h-5 w-5" />
@@ -209,11 +188,7 @@ export function Dashboard({ studentData, onStartExercises }: DashboardProps) {
               </div>
             </Button>
             
-            <Button 
-              variant="outline" 
-              onClick={() => handleAction("lessons")}
-              className="flex items-center gap-2 h-auto p-4"
-            >
+            <Button variant="outline" className="flex items-center gap-2 h-auto p-4">
               <BookOpen className="h-5 w-5" />
               <div className="text-left">
                 <div className="font-medium">Consulter les cours</div>
@@ -229,31 +204,8 @@ export function Dashboard({ studentData, onStartExercises }: DashboardProps) {
               </div>
             </Button>
           </div>
-          
-          {isGuestMode && (
-            <div className="mt-4 p-4 bg-accent/50 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium text-sm">Mode invité</h4>
-                  <p className="text-xs text-muted-foreground">
-                    Créez un compte pour sauvegarder vos progrès
-                  </p>
-                </div>
-                <Button 
-                  size="sm" 
-                  onClick={() => setShowGuestPrompt(true)}
-                >
-                  Créer un compte
-                </Button>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
-      
-      {showGuestPrompt && (
-        <GuestPrompt onClose={() => setShowGuestPrompt(false)} />
-      )}
     </div>
   );
 }

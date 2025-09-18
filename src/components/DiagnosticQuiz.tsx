@@ -3,9 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, ArrowRight, RotateCcw } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useGuestData } from "@/hooks/useGuestData";
-import { GuestPrompt } from "./GuestPrompt";
 
 interface QuizQuestion {
   id: number;
@@ -197,10 +194,6 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
   const [answers, setAnswers] = useState<number[]>([]);
   const [showExplanation, setShowExplanation] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [showGuestPrompt, setShowGuestPrompt] = useState(false);
-
-  const { isGuestMode } = useAuth();
-  const { saveGuestData } = useGuestData();
 
   const questions = sampleQuestions.filter(q => q.level === level).slice(0, 5);
   const progress = ((currentQuestion + 1) / questions.length) * 100;
@@ -262,14 +255,6 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
       percentage: Math.round((correctAnswers / questions.length) * 100)
     };
 
-    // Save progress for guest users
-    if (isGuestMode) {
-      saveGuestData({
-        quizResults: [results],
-        selectedLevel: level,
-      });
-    }
-
     return (
       <div className="w-full max-w-2xl mx-auto p-6">
         <Card className="shadow-floating bg-gradient-card">
@@ -289,24 +274,11 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
             <Button onClick={() => onComplete(results)} className="w-full mb-4">
               Voir mes résultats
             </Button>
-            <Button variant="outline" onClick={handleRestart} className="w-full mb-4">
+            <Button variant="outline" onClick={handleRestart} className="w-full">
               Refaire le test
             </Button>
-            {isGuestMode && (
-              <Button 
-                variant="ghost" 
-                onClick={() => setShowGuestPrompt(true)} 
-                className="w-full text-sm"
-              >
-                Créer un compte pour sauvegarder mes résultats
-              </Button>
-            )}
           </CardContent>
         </Card>
-        
-        {showGuestPrompt && (
-          <GuestPrompt onClose={() => setShowGuestPrompt(false)} />
-        )}
       </div>
     );
   }
