@@ -22,13 +22,13 @@ export function WelcomeHeader({ onGetStarted }: WelcomeHeaderProps) {
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white">
         <div className="mb-8">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90">
-            MathMentor
+            Mathematica
           </h1>
           <p className="text-xl md:text-2xl mb-8 opacity-90 font-medium">
-            Ton assistant pédagogique personnalisé pour exceller en mathématiques
-          </p>
+            🌟 Plongez dans l'univers magique des mathématiques ! 🌟
+          </p>  
           <p className="text-lg opacity-80 mb-12 max-w-2xl mx-auto">
-            Programme officiel • Tests adaptatifs • Suivi des progrès • Exercices interactifs
+            Programme officiel • IA adaptative • Gamification immersive • Suivi personnalisé
           </p>
         </div>
 

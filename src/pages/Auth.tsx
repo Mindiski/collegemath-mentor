@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, MessageCircle, Twitter } from "lucide-react";
+import { Mail, MessageCircle, Twitter, User } from "lucide-react";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { enterGuestMode } = useAuth();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,13 +175,20 @@ const Auth = () => {
     }
   };
 
+  const handleGuestMode = () => {
+    enterGuestMode();
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">MathMentor</CardTitle>
+          <CardTitle className="text-2xl bg-gradient-mathematica bg-clip-text text-transparent">
+            Bienvenue dans Mathematica ✨
+          </CardTitle>
           <CardDescription>
-            Accédez à votre plateforme d'apprentissage des mathématiques
+            Votre aventure mathématique personnalisée commence ici
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -287,6 +296,17 @@ const Auth = () => {
               >
                 <MessageCircle className="mr-2 h-4 w-4" />
                 Continuer avec Discord
+              </Button>
+              
+              <Separator className="my-4" />
+              
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={handleGuestMode}
+              >
+                <User className="mr-2 h-4 w-4" />
+                Continuer en tant qu'invité
               </Button>
             </div>
           </div>

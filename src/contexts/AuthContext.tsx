@@ -6,7 +6,10 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isGuest: boolean;
   signOut: () => Promise<void>;
+  enterGuestMode: () => void;
+  exitGuestMode: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,6 +26,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -46,13 +50,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setIsGuest(false);
+  };
+
+  const enterGuestMode = () => {
+    setIsGuest(true);
+  };
+
+  const exitGuestMode = () => {
+    setIsGuest(false);
   };
 
   const value = {
     user,
     session,
     loading,
+    isGuest,
     signOut,
+    enterGuestMode,
+    exitGuestMode,
   };
 
   return (

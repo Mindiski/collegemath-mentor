@@ -2,7 +2,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, XCircle, ArrowRight, RotateCcw } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, XCircle, ArrowRight, RotateCcw, Sparkles } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useGuestData } from "@/hooks/useGuestData";
+import { GuestPrompt } from "./GuestPrompt";
+import { useNavigate } from "react-router-dom";
 
 interface QuizQuestion {
   id: number;
@@ -14,79 +19,79 @@ interface QuizQuestion {
 }
 
 const sampleQuestions: QuizQuestion[] = [
-  // Questions 6ème
+  // Questions 6ème - Focus spécifique selon knowledge
   {
     id: 1,
-    question: "Quel est le résultat de 15 + 7 × 3 ?",
+    question: "🔢 Quel est le résultat de 15 + 7 × 3 ?",
     options: ["66", "36", "45", "22"],
     correctAnswer: 1,
-    explanation: "Il faut d'abord faire la multiplication : 7 × 3 = 21, puis l'addition : 15 + 21 = 36",
+    explanation: "🎯 Il faut d'abord faire la multiplication : 7 × 3 = 21, puis l'addition : 15 + 21 = 36. C'est la règle de priorité des opérations !",
     level: "6ème"
   },
   {
     id: 2,
-    question: "Quelle fraction est équivalente à 0,25 ?",
+    question: "📐 Quelle fraction est équivalente à 0,25 ?",
     options: ["1/2", "1/4", "2/5", "3/8"],
     correctAnswer: 1,
-    explanation: "0,25 = 25/100 = 1/4 après simplification",
+    explanation: "✨ 0,25 = 25/100 = 1/4 après simplification. Tu divises numérateur et dénominateur par 25 !",
     level: "6ème"
   },
   {
     id: 3,
-    question: "Combien vaut 2³ ?",
+    question: "⚡ Combien vaut 2³ ?",
     options: ["6", "8", "9", "12"],
     correctAnswer: 1,
-    explanation: "2³ = 2 × 2 × 2 = 8",
+    explanation: "🚀 2³ = 2 × 2 × 2 = 8. L'exposant 3 signifie qu'on multiplie 2 par lui-même 3 fois !",
     level: "6ème"
   },
   {
     id: 4,
-    question: "Le périmètre d'un carré de côté 5 cm est :",
+    question: "📏 Le périmètre d'un carré de côté 5 cm est :",
     options: ["10 cm", "15 cm", "20 cm", "25 cm"],
     correctAnswer: 2,
-    explanation: "Le périmètre d'un carré = 4 × côté = 4 × 5 = 20 cm",
+    explanation: "🎨 Le périmètre d'un carré = 4 × côté = 4 × 5 = 20 cm. Tu additionnes les 4 côtés égaux !",
     level: "6ème"
   },
   {
     id: 5,
-    question: "La moyenne de 12, 16 et 20 est :",
-    options: ["14", "16", "18", "20"],
-    correctAnswer: 1,
-    explanation: "Moyenne = (12 + 16 + 20) ÷ 3 = 48 ÷ 3 = 16",
+    question: "🌟 Combien y a-t-il de millimètres dans 3,5 centimètres ?",
+    options: ["35 mm", "350 mm", "3,5 mm", "0,35 mm"],
+    correctAnswer: 0,
+    explanation: "💡 1 cm = 10 mm, donc 3,5 cm = 3,5 × 10 = 35 mm. Multiplier par 10 décale la virgule !",
     level: "6ème"
   },
 
   // Questions 5ème
   {
     id: 6,
-    question: "Développer l'expression 3(x + 2) :",
-    options: ["3x + 2", "3x + 6", "x + 6", "3x + 5"],
-    correctAnswer: 1,
-    explanation: "3(x + 2) = 3 × x + 3 × 2 = 3x + 6",
+    question: "Calculer : (-3) × (+5)",
+    options: ["-15", "+15", "-8", "+8"],
+    correctAnswer: 0,
+    explanation: "(-3) × (+5) = -15 (règle des signes : négatif × positif = négatif)",
     level: "5ème"
   },
   {
     id: 7,
-    question: "La probabilité de tirer un as dans un jeu de 32 cartes est :",
-    options: ["1/8", "1/4", "4/32", "1/32"],
+    question: "Simplifier la fraction 12/18 :",
+    options: ["2/3", "3/4", "4/6", "6/9"],
     correctAnswer: 0,
-    explanation: "Il y a 4 as dans 32 cartes, donc P = 4/32 = 1/8",
+    explanation: "12/18 = (12÷6)/(18÷6) = 2/3 (on divise par le PGCD qui est 6)",
     level: "5ème"
   },
   {
     id: 8,
-    question: "L'aire d'un triangle de base 6 cm et de hauteur 4 cm est :",
+    question: "L'aire d'un triangle de base 6 cm et hauteur 4 cm est :",
     options: ["10 cm²", "12 cm²", "24 cm²", "48 cm²"],
     correctAnswer: 1,
-    explanation: "Aire = (base × hauteur) ÷ 2 = (6 × 4) ÷ 2 = 12 cm²",
+    explanation: "Aire triangle = (base × hauteur) ÷ 2 = (6 × 4) ÷ 2 = 12 cm²",
     level: "5ème"
   },
   {
     id: 9,
-    question: "Quelle est la mesure de l'angle manquant dans un triangle ayant des angles de 60° et 45° ?",
-    options: ["75°", "85°", "90°", "105°"],
-    correctAnswer: 0,
-    explanation: "Dans un triangle, la somme des angles = 180°. Donc 180° - 60° - 45° = 75°",
+    question: "Convertir 2,5 heures en minutes :",
+    options: ["125 min", "150 min", "250 min", "25 min"],
+    correctAnswer: 1,
+    explanation: "2,5 h = 2 h + 0,5 h = 120 min + 30 min = 150 min",
     level: "5ème"
   },
   {
@@ -194,6 +199,11 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
   const [answers, setAnswers] = useState<number[]>([]);
   const [showExplanation, setShowExplanation] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [showGuestPrompt, setShowGuestPrompt] = useState(false);
+  
+  const { isGuest } = useAuth();
+  const { saveGuestData } = useGuestData();
+  const navigate = useNavigate();
 
   const questions = sampleQuestions.filter(q => q.level === level).slice(0, 5);
   const progress = ((currentQuestion + 1) / questions.length) * 100;
@@ -213,7 +223,7 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
         setSelectedAnswer(null);
         setShowExplanation(false);
       } else {
-        // Quiz completed - just set the flag, completion screen will show
+        // Quiz terminé
         setQuizCompleted(true);
       }
     }
@@ -225,6 +235,28 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
     setAnswers([]);
     setShowExplanation(false);
     setQuizCompleted(false);
+    setShowGuestPrompt(false);
+  };
+
+  const handleGuestSignUp = () => {
+    navigate("/auth");
+  };
+
+  const handleGuestContinue = () => {
+    setShowGuestPrompt(false);
+    const correctAnswers = answers.reduce((count, answer, index) => {
+      return answer === questions[index].correctAnswer ? count + 1 : count;
+    }, 0);
+    const score = correctAnswers;
+    const percentage = Math.round((score / questions.length) * 100);
+    
+    onComplete({
+      level,
+      score,
+      total: questions.length,
+      percentage,
+      name: "Invité"
+    });
   };
 
   if (questions.length === 0) {
@@ -242,41 +274,84 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
     );
   }
 
-  // Quiz completion screen
+  if (showGuestPrompt) {
+    return (
+      <GuestPrompt
+        trigger="quiz_complete"
+        onSignUp={handleGuestSignUp}
+        onContinueAsGuest={handleGuestContinue}
+      />
+    );
+  }
+
+  // Écran de fin de quiz
   if (quizCompleted) {
     const correctAnswers = answers.reduce((count, answer, index) => {
       return answer === questions[index].correctAnswer ? count + 1 : count;
     }, 0);
-    
+    const score = correctAnswers;
+    const percentage = Math.round((score / questions.length) * 100);
+
+    // Gérer les utilisateurs invités
+    if (isGuest) {
+      const results = {
+        level,
+        score,
+        total: questions.length,
+        percentage,
+        name: "Invité"
+      };
+      saveGuestData({
+        quizResults: [results],
+        selectedLevel: level
+      });
+      setShowGuestPrompt(true);
+      return null;
+    }
+
     const results = {
       level,
-      score: correctAnswers,
+      score,
       total: questions.length,
-      percentage: Math.round((correctAnswers / questions.length) * 100)
+      percentage,
+      name: "Élève"
     };
 
     return (
       <div className="w-full max-w-2xl mx-auto p-6">
-        <Card className="shadow-floating bg-gradient-card">
+        <Card className="shadow-floating">
           <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-success rounded-full flex items-center justify-center">
-              <CheckCircle className="h-8 w-8 text-white" />
+            <div className="mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-mathematica flex items-center justify-center">
+                <Sparkles className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">Quiz terminé ! 🎉</h3>
+              <p className="text-muted-foreground">
+                Tu as répondu à {score} questions sur {questions.length}
+              </p>
             </div>
-            <h2 className="text-2xl font-bold mb-4 text-primary">
-              Test terminé !
-            </h2>
-            <div className="text-4xl font-bold mb-2 text-primary">
-              {correctAnswers}/{questions.length}
+
+            <div className="mb-6">
+              <div className="text-4xl font-bold text-primary mb-2">
+                {percentage}%
+              </div>
+              <Badge variant={percentage >= 60 ? "default" : "secondary"} className="text-lg px-4 py-2">
+                {percentage >= 80 ? "Excellent !" : 
+                 percentage >= 60 ? "Bien joué !" : 
+                 percentage >= 40 ? "Pas mal !" : "Continue tes efforts !"}
+              </Badge>
             </div>
-            <p className="text-muted-foreground mb-6">
-              Tu as obtenu {results.percentage}% de bonnes réponses
-            </p>
-            <Button onClick={() => onComplete(results)} className="w-full mb-4">
-              Voir mes résultats
-            </Button>
-            <Button variant="outline" onClick={handleRestart} className="w-full">
-              Refaire le test
-            </Button>
+
+            <div className="flex gap-4 justify-center">
+              <Button variant="outline" onClick={handleRestart}>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Recommencer
+              </Button>
+              <Button onClick={() => onComplete(results)}>
+                <ArrowRight className="mr-2 h-4 w-4" />
+                Voir les résultats
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -284,96 +359,103 @@ export function DiagnosticQuiz({ level, onComplete }: DiagnosticQuizProps) {
   }
 
   const currentQ = questions[currentQuestion];
-  const isCorrect = selectedAnswer === currentQ.correctAnswer;
+  const isCorrectAnswer = selectedAnswer === currentQ.correctAnswer;
 
   return (
     <div className="w-full max-w-2xl mx-auto p-6">
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-2xl font-bold text-primary">
-            Test diagnostique - {level}
-          </h2>
-          <span className="text-sm text-muted-foreground">
-            {currentQuestion + 1} / {questions.length}
-          </span>
-        </div>
-        <Progress value={progress} className="h-2" />
-      </div>
-
       <Card className="shadow-card">
         <CardHeader>
-          <CardTitle className="text-lg">
-            {currentQ.question}
-          </CardTitle>
+          <div className="flex justify-between items-center mb-4">
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Test Mathematica - {level}
+              <Badge variant="secondary" className="ml-2">
+                Quest Mode
+              </Badge>
+            </CardTitle>
+          </div>
+          <Progress value={progress} className="mb-2" />
+          <p className="text-sm text-muted-foreground">
+            Question {currentQuestion + 1} sur {questions.length}
+          </p>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3 mb-6">
-            {currentQ.options.map((option, index) => (
-              <Button
-                key={index}
-                variant={
-                  selectedAnswer === index
-                    ? isCorrect
-                      ? "default"
-                      : "destructive"
-                    : "outline"
+        <CardContent className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-4">
+              {currentQ.question}
+            </h3>
+            <div className="grid gap-3">
+              {currentQ.options.map((option, index) => {
+                let buttonVariant: "default" | "outline" | "secondary" = "outline";
+                let className = "";
+                
+                if (selectedAnswer === index) {
+                  if (isCorrectAnswer) {
+                    buttonVariant = "default";
+                    className = "bg-success text-success-foreground border-success";
+                  } else {
+                    buttonVariant = "secondary";
+                    className = "bg-destructive text-destructive-foreground border-destructive";
+                  }
+                } else if (showExplanation && index === currentQ.correctAnswer) {
+                  buttonVariant = "default";
+                  className = "bg-success text-success-foreground border-success";
                 }
-                className="w-full justify-start text-left"
-                onClick={() => handleAnswerSelect(index)}
-                disabled={showExplanation}
-              >
-                <div className="flex items-center gap-3">
-                  {showExplanation && (
-                    <>
-                      {index === currentQ.correctAnswer ? (
-                        <CheckCircle className="h-4 w-4 text-success" />
-                      ) : selectedAnswer === index ? (
-                        <XCircle className="h-4 w-4 text-destructive" />
-                      ) : null}
-                    </>
-                  )}
-                  {option}
-                </div>
-              </Button>
-            ))}
+
+                return (
+                  <Button
+                    key={index}
+                    variant={buttonVariant}
+                    className={`justify-start h-auto p-4 text-left ${className}`}
+                    onClick={() => handleAnswerSelect(index)}
+                    disabled={showExplanation}
+                  >
+                    <span className="mr-3 font-semibold">
+                      {String.fromCharCode(65 + index)}.
+                    </span>
+                    {option}
+                    {showExplanation && selectedAnswer === index && (
+                      <span className="ml-auto">
+                        {isCorrectAnswer ? (
+                          <CheckCircle className="h-5 w-5 text-success" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-destructive" />
+                        )}
+                      </span>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
           </div>
 
           {showExplanation && (
-            <div className={`p-4 rounded-lg mb-4 ${
-              isCorrect ? "bg-success/10 border border-success/20" : "bg-destructive/10 border border-destructive/20"
-            }`}>
-              <div className="flex items-center gap-2 mb-2">
-                {isCorrect ? (
+            <div className="bg-accent/50 p-4 rounded-lg border">
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                {isCorrectAnswer ? (
                   <CheckCircle className="h-5 w-5 text-success" />
                 ) : (
                   <XCircle className="h-5 w-5 text-destructive" />
                 )}
-                <span className="font-medium">
-                  {isCorrect ? "Bonne réponse !" : "Pas tout à fait..."}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {currentQ.explanation}
-              </p>
+                {isCorrectAnswer ? "Bravo ! ✨" : "Pas tout à fait... 🤔"}
+              </h4>
+              <p className="text-sm">{currentQ.explanation}</p>
             </div>
           )}
 
           <div className="flex justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline">
+                {currentQuestion + 1}/{questions.length}
+              </Badge>
+            </div>
             <Button
-              variant="outline"
-              onClick={handleRestart}
-              className="flex items-center gap-2"
+              onClick={handleNextQuestion}
+              disabled={selectedAnswer === null}
             >
-              <RotateCcw className="h-4 w-4" />
-              Recommencer
+              {currentQuestion === questions.length - 1 ? "Terminer" : "Suivant"}
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-            
-            {showExplanation && (
-              <Button onClick={handleNextQuestion} className="flex items-center gap-2">
-                {currentQuestion < questions.length - 1 ? "Question suivante" : "Terminer"}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            )}
           </div>
         </CardContent>
       </Card>

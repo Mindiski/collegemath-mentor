@@ -15,17 +15,17 @@ import { LogOut } from "lucide-react";
 type AppState = "welcome" | "level-selection" | "quiz" | "results" | "dashboard" | "exercises";
 
 const Index = () => {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, isGuest, exitGuestMode } = useAuth();
   const navigate = useNavigate();
   const [currentState, setCurrentState] = useState<AppState>("welcome");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
   const [quizResults, setQuizResults] = useState<any>(null);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!loading && !user && !isGuest) {
       navigate("/auth");
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isGuest, navigate]);
 
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
@@ -54,7 +54,11 @@ const Index = () => {
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    if (isGuest) {
+      exitGuestMode();
+    } else {
+      await signOut();
+    }
     navigate("/auth");
   };
 
@@ -66,7 +70,7 @@ const Index = () => {
     );
   }
 
-  if (!user) {
+  if (!user && !isGuest) {
     return null;
   }
 
@@ -79,7 +83,7 @@ const Index = () => {
         <div className="absolute top-4 right-4 z-50">
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
-            Déconnexion
+            {isGuest ? "Quitter mode invité" : "Déconnexion"}
           </Button>
         </div>
         <WelcomeHeader onGetStarted={() => setCurrentState("level-selection")} />
