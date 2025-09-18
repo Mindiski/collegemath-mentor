@@ -78,6 +78,8 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-success': 'var(--gradient-success)',
         'gradient-creative': 'var(--gradient-creative)',
+        'gradient-warning': 'var(--gradient-warning)',
+        'gradient-destructive': 'var(--gradient-destructive)',
         'gradient-hero': 'var(--gradient-hero)',
         'gradient-card': 'var(--gradient-card)',
       },

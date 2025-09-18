@@ -70,7 +70,12 @@ export function ResultsModal({ results, onContinue, onRetake }: ResultsModalProp
         <CardContent className="p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-${performance.color} flex items-center justify-center`}>
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-full ${
+              performance.color === 'success' ? 'bg-gradient-success' :
+              performance.color === 'primary' ? 'bg-gradient-primary' :
+              performance.color === 'warning' ? 'bg-gradient-warning' :
+              'bg-gradient-destructive'
+            } flex items-center justify-center`}>
               <PerformanceIcon className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-foreground mb-2">
@@ -90,7 +95,12 @@ export function ResultsModal({ results, onContinue, onRetake }: ResultsModalProp
               <p className="text-sm text-muted-foreground">Questions correctes</p>
             </div>
             <div className="text-center">
-              <div className={`text-4xl font-bold text-${performance.color} mb-2`}>
+              <div className={`text-4xl font-bold ${
+                performance.color === 'success' ? 'text-success' :
+                performance.color === 'primary' ? 'text-primary' :
+                performance.color === 'warning' ? 'text-warning' :
+                'text-destructive'
+              } mb-2`}>
                 {results.percentage}%
               </div>
               <p className="text-sm text-muted-foreground">Score global</p>
