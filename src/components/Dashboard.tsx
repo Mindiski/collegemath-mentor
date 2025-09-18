@@ -47,6 +47,7 @@ export function Dashboard({ studentData, onStartExercises }: DashboardProps) {
   
   const { isGuestMode } = useAuth();
   const { guestData, saveGuestData } = useGuestData();
+  
   const getScoreColor = (percentage: number) => {
     if (percentage >= 80) return "text-success";
     if (percentage >= 60) return "text-primary";
