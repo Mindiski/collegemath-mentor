@@ -18,6 +18,7 @@ export const useUserRole = () => {
       }
 
       try {
+        console.log('Fetching role for user:', user.id);
         const { data, error } = await supabase
           .from('user_roles')
           .select('role')
@@ -28,6 +29,7 @@ export const useUserRole = () => {
           console.error('Error fetching user role:', error);
           setRole(null);
         } else {
+          console.log('User role fetched:', data?.role);
           setRole(data?.role as UserRole);
         }
       } catch (error) {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { WelcomeHeader } from "@/components/WelcomeHeader";
 import { LevelSelector } from "@/components/LevelSelector";
@@ -10,16 +11,19 @@ import { DiagnosticQuiz } from "@/components/DiagnosticQuiz";
 import { Dashboard } from "@/components/Dashboard";
 import { ExerciseModule } from "@/components/ExerciseModule";
 import { ResultsModal } from "@/components/ResultsModal";
-import { LogOut } from "lucide-react";
+import { LogOut, Shield } from "lucide-react";
 
 type AppState = "welcome" | "level-selection" | "quiz" | "results" | "dashboard" | "exercises";
 
 const Index = () => {
   const { user, loading, signOut, isGuest, exitGuestMode } = useAuth();
+  const { isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const [currentState, setCurrentState] = useState<AppState>("welcome");
   const [selectedLevel, setSelectedLevel] = useState<string>("");
   const [quizResults, setQuizResults] = useState<any>(null);
+
+  console.log('Index - User:', user?.id, 'IsAdmin:', isAdmin, 'Loading:', loading, 'RoleLoading:', roleLoading);
 
   useEffect(() => {
     if (!loading && !user && !isGuest) {
@@ -80,7 +84,17 @@ const Index = () => {
   if (currentState === "welcome") {
     return (
       <div className="relative">
-        <div className="absolute top-4 right-4 z-50">
+        <div className="absolute top-4 right-4 z-50 flex gap-2">
+          {user && isAdmin && (
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/admin")}
+              className="bg-primary/10 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Shield className="mr-2 h-4 w-4" />
+              Administration
+            </Button>
+          )}
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             {isGuest ? "Quitter mode invité" : "Déconnexion"}
