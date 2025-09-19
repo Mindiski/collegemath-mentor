@@ -6,15 +6,59 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import ResourceCompiler from '@/components/ResourceCompiler';
 import AIQuestionGenerator from '@/components/AIQuestionGenerator';
-import { Settings, LogOut, Shield, Database, Brain } from 'lucide-react';
+import { useUserRole } from '@/hooks/useUserRole';
+import { Settings, LogOut, Shield, Database, Brain, AlertTriangle } from 'lucide-react';
 
 const Admin = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin, loading } = useUserRole();
   const [activeTab, setActiveTab] = useState('resources');
 
-  // Simple admin check - in production, implement proper role-based access
+  // Check if user is authenticated
   if (!user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Show loading while checking role
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Shield className="h-8 w-8 text-primary mx-auto mb-2 animate-spin" />
+          <p className="text-muted-foreground">Vérification des permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if user is admin
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <AlertTriangle className="h-12 w-12 text-warning mx-auto mb-4" />
+            <CardTitle>Accès Restreint</CardTitle>
+            <CardDescription>
+              Cette page est réservée aux administrateurs de la plateforme Mathematica.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Vous n'avez pas les permissions nécessaires pour accéder à cette section.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button variant="outline" onClick={() => window.history.back()}>
+                Retour
+              </Button>
+              <Button onClick={signOut}>
+                Se déconnecter
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   const handleSignOut = async () => {
@@ -30,7 +74,7 @@ const Admin = () => {
             <div className="flex items-center gap-3">
               <Shield className="h-6 w-6 text-primary" />
               <div>
-                <h1 className="text-xl font-bold">Administration MathMentor</h1>
+                <h1 className="text-xl font-bold">Administration Mathematica</h1>
                 <p className="text-sm text-muted-foreground">
                   Gestion des agents IA et des ressources éducatives
                 </p>
